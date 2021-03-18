@@ -1,0 +1,10 @@
+
+EVN/node_modules
+EVN/build
+EVN/npm-debug.log
+EVN/.env
+EVN/.DS_Store
+EVN/client/node_modules
+
+prototype/node_modules
+
