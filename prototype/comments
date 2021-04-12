@@ -1,0 +1,16 @@
+ //   reader.readAsArrayBuffer(this.firstFile);
+    
+    //   this.socket.emit("file-upload", {
+    //     name: "nina",
+    //     data: formData
+    //   })
+      
+     // sending file to the backend
+    //   axios
+    //     .post("http://localhost:4500/upload", formData)
+    //     .then(res => {
+    //       console.log(res);
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });

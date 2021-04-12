@@ -1,5 +1,11 @@
 <template>
   <div id="charts-area" class="main-panel">
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{ $store.getters.num_data_files }} models' results detected in "data_files" directory
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
     <input  name="Number of Arcs" type="range" min="4" max="22" v-model="high_arc_index" 
             v-on:change="test" oninput="this.nextElementSibling.value = this.value"
     />
@@ -13,17 +19,25 @@
 </template>
 
 <script>
-import * as d3 from 'd3';
+import io from "socket.io-client";
+import * as d3 from "d3";
 import json from '../assets/json_1000.json';
 
 export default {
     name: 'charts-area',
     data(){
       return{
+        socket: {},
+        metric:"accuracy",
         myData: json,
+        received_data: {},
         low_arc_index: 2,
         high_arc_index: 22
       }
+    },
+    created(){
+      this.socket = io("http://localhost:3000");
+      this.socket.emit("set-up-data", this.metric);
     },
     methods: {
       // Random number generator from MDN Mozilla tutorial on JS
@@ -34,13 +48,18 @@ export default {
         return Math.floor(Math.random() * (max - min + 1) + min); 
         //The maximum is inclusive and the minimum is inclusive 
       },
-      renderGraphs: function() {
-          // alert('test');
-          var loaded = this.myData;
-          var svg = d3.select("div#container").select("#demo1")
+      svg_setup: function(){
+        return d3.select("div#container").select("#demo1")
               .attr("preserveAspectRatio", "xMinYMin meet")
               .attr("viewBox", "0 0 1200 1200")
               .classed("svg-content", true);
+      },
+      renderGraphs: function() {
+          // To Do add metric accuracy log here
+          // if 
+
+          var loaded = this.myData;
+          var svg = this.svg_setup();
 
           var my_data = svg.select('#main').datum(loaded);
           
@@ -70,10 +89,25 @@ export default {
       },
       changed: function(event) {
           this.$store.commit('change', event.target.value)
+      }, 
+      get_accuracy: function() {
+
       }
     },  
     mounted: function() {
-        this.renderGraphs();
+        this.socket.on("position", data => {
+          this.high_arc_index = data;
+          this.renderGraphs();
+        })
+        this.socket.on("ask for more", function(){
+          console.log("maybe");
+        })
+        this.socket.emit(String(this.metric));
+        this.socket.on("accuracy_data_from_server", function(data){
+          console.log(data);
+        })
+
+
     }
 }
 </script>
