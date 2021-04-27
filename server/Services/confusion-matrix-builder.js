@@ -11,6 +11,7 @@ var accuracy_flag = false;
 var cm_object={};
 var accuracy_object={};
 var precision_object={};
+var recall_object = {};
 
 function get_accuracy(){
     return accuracy_object;
@@ -20,6 +21,9 @@ function get_precision(){
     return precision_object;
 }
 
+function get_recall(){
+    return compute_recall();
+}
 
 var groundPath = path.join(__dirname, '..', directory_name, 'ground-truth.json');
 
@@ -50,7 +54,6 @@ var promises= filenames.map(function(_path){
         });
     }.bind(this, _path));
 });
-
 
 function load_in_data_files(){
     fs.readFile(groundPath, 'utf8' , (err, data) => {
@@ -109,61 +112,37 @@ function load_in_data_files(){
     })
     // console.log(Object.keys(cm_object), '80-cf-bulder')  ;
     // console.log(Object.keys(accuracy_object), '93-cf-bulder')  ;
-
 }
-
-
-// .then(function(){
-        //     if (!accuracy_flag){
-        //         fs.writeFile('accuracy.json', JSON.stringify(accuracy_object, null, 2), function(err) {
-        //             if(err) {
-        //                 console.log(err);
-        //             }
-        //         })
-        //         accuracy_flag = true;
-        //     }
-        // });
-
-    // setTimeout(() =>  
-    //         function(){
-                // fs.writeFile('ACCURACY.json', JSON.stringify(accuracy_object, null, 2), function(err) {
-                //     if(err) {
-                //         console.log(err);
-                //     }
-    //             })
-    //     }, 100);
-
-
-// var p = new Promise(function(resolve, reject) {
-	
-// 	// Do an async task async task and then...
-//      setTimeout(() =>  
-//             function(){
-//                 fs.writeFile('ACCURACY.json', JSON.stringify(accuracy_object, null, 2), function(err) {
-//                     if(err) {
-//                         console.log(err);
-//                     }
-//                 })
-//         }, 10000);
-
-// 	if(accuracy_flag) {
-// 		resolve('Success!');
-// 	}
-// 	else {
-// 		reject('Failure!');
-// 	}
-// });
-
 
 load_in_data_files();
 
+// ============================
+// compute recall for each class in each model
+function compute_recall(){
+    var models = Object.keys(cm_object);
+    for (let step = 0; step < models.length; step++) {
+        var row_r = Array(num_classes).fill(0);
+        var name = models[step]
+        var results = cm_object[name];
+    
+        var TP = results.TP;
+        var TN = results.TN;
+        var FP = results.FP; 
+        var FN = results.FN;
+        
+        for (let class_index = 0; class_index < num_classes; class_index++) {
+            row_r[class_index] = TP[class_index]/(TP[class_index] + FN[class_index] );
+        }
+        // fs.writeFile(step+'-recall.JSON', JSON.stringify(row_r, null, 2), function(err) {
+        //     if(err) {
+        //         console.log(err);
+        //     }
+        // });
+        recall_object[name] = row_r;
+    }
+    return recall_object;
+}
 
-// p.then(function(data) { 
-// 	/* do something with the result */
-//    console.log(data);
-// }).catch(function(data) {
-// 	console.log(data);
-// })
 
 
 
@@ -249,8 +228,7 @@ function empty_confusion_matrix(num_classes){
         var row_name = "row" + String(step);
         jsonObj[row_name]=Array(num_classes).fill(0);
     }
-    // console.log(jsonObj);
-    // console.log(Object.keys(jsonObj));
+
     return jsonObj;
 }
 
@@ -354,6 +332,7 @@ module.exports = {
     load_in_data_files,
     get_num_models, 
     get_accuracy, 
-    get_precision
+    get_precision, 
+    get_recall
 }
         

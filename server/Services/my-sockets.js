@@ -14,14 +14,25 @@ module.exports = (io)=>{
             console.log(data);
             c_matrix.load_in_data_files();
             // socket.emit(data.toString());
-        })
+        });
         
         socket.on("accuracy", function(){
             console.log("yo yo yo nina! boo boo!");
             var accuracy = c_matrix.get_accuracy();
             socket.emit("accuracy_data_from_server", accuracy);
-        })
+        });
 
+        socket.on("precision", function(){
+            console.log("precision precision nina! boo boo!");
+            var accuracy = c_matrix.get_precision();
+            socket.emit("precision_data_from_server", accuracy);
+        })
+        
+        socket.on("recall", function(){
+            console.log("recall nina! boo boo!");
+            var recall = c_matrix.get_recall();
+            socket.emit("precision_data_from_server", recall);
+        })
 
         // console.log(socket.id); 
         // if (!socket.load_in_data_files){

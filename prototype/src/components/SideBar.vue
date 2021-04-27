@@ -23,14 +23,19 @@
             <input type="radio" id="two" value="lines" v-model="picked">Lines View
       </label>
       <p>{{ picked }} is selected!</p>
+      <hr>
+      <label for="accuracy">
+        <input type="radio" id="accuracy" value="accuracy" v-model="data_type" v-on:click="update_store"> Accuracy
+      </label> <br>
+      <label for="precision">
+            <input type="radio" id="precision" value="precision" v-model="data_type" v-on:click="update_store">Precision 
+      </label>
     </div>
     <hr>
     <label for="slider">Plot Spacing
       <input id="slider" class="bg-info" name="plot-spacing" type="range" min="1" max="10" v-model="plot_spacing" 
           oninput="this.nextElementSibling.value = this.value"/> 
-      <!-- <output @change="changed">1</output> -->
     </label>
-
   </div>
 </template>
 
@@ -43,8 +48,15 @@ export default {
     return {
       picked:"",
       plot_spacing: 1,
-      socket:{}
-    }
+      socket:{},
+      data_type: this.$store.getters.op_type
+  }
+  },
+  methods: {
+    update_store: function(event) {
+          console.log(event.target.value);
+          this.$store.commit('change_op_type', event.target.value);
+    }, 
   },
   created(){
     this.socket = io("http://localhost:3000");
