@@ -60,6 +60,16 @@ export default {
         return Math.floor(Math.random() * (max - min + 1) + min); 
         //The maximum is inclusive and the minimum is inclusive 
       },
+      angles_setup: function(num_classes) {
+        var result = [];
+        var delta = 6.28/num_classes;
+        var angle = 0.0;
+        for (let step = 0; step < num_classes; step++) {
+            result[step] = angle;
+            angle = delta + angle;
+        }
+        return result;
+      },
       svg_setup: function(){
         return d3.select("div#container").select("#demo1")
               .attr("preserveAspectRatio", "xMinYMin meet")
@@ -119,39 +129,34 @@ export default {
       get_accuracy: function() {
 
       },
-      render_precision: function() {
-        console.log("inside precision");
+      
+      render_op: function(word) {
+        console.log("inside" + String(word));
         this.socket = io("http://localhost:3000");
-        this.socket.emit("precision");
-        // const zip = (arr, ...arrs) => {
-        //   return arr.map((val, i) => arrs.reduce((a, arr) => [...a, arr[i]], [val]));
-        // }
-        this.socket.on("precision_data_from_server", function(data){
-          // console.log(data);
+        this.socket.emit(word);
+        var emit_name = `${word}_data_from_server`;
+        this.socket.on(emit_name, function(data){
           this.received_data = data;
           var angles = [];
           var delta = 6.28/1000.0;
           var angle = 0.0;
           for (let step = 0; step < 1000; step++) {
               angles[step] = angle;
-              // angles.push(angle);
               angle = delta + angle;
           }
           
           var model_names = Object.keys(this.received_data);
-          console.log(model_names);
           var data_to_render = {};
           model_names.forEach(model_name => {
             var temp_array = this.received_data[model_name];
             var temp_arr_2  = Object.values(temp_array);
             // var zip_array = zip(angles, temp_arr_2);
-            // console.log(zip_array);
-            var map_1 = temp_arr_2.map(x => Math.floor(x*10.0)) ;
-            // console.log(map_1);
+            // var map_1 = temp_arr_2.map(x => Math.floor(x*10.0)) ;
+            var map_1 = temp_arr_2.map(x => x*10.0) ;
             data_to_render[model_name] = map_1;
           });
-          console.log(data_to_render);
-          this.p_data = data_to_render;
+          // console.log(data_to_render);
+          this.r_data = data_to_render;
          
           var svg = d3.select("div#container").select("#demo1").select('#main');
           svg.selectAll("*").remove();
@@ -208,7 +213,17 @@ export default {
           console.log(`My store value for 'doneTodosCount' changed to ${value}`);
           this.picked = value;
           if (this.picked === "precision") {
-            this.render_precision();
+            this.render_op("precision");
+          } else if (this.picked === "recall") {
+            this.render_op("recall");
+          } else if (this.picked === "f1-score") {
+            this.render_op("f1-score");
+          } else if (this.picked === "specificity") {
+            this.render_op("specificity");
+          } else if (this.picked === "fpr") {
+            this.render_op("fpr");
+          } else if (this.picked === "fnr") {
+            this.render_op("fnr");
           }
 
           return this.picked;

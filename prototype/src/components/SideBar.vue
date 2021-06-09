@@ -1,5 +1,5 @@
 <template>
-  <div id="side-bar" class="side-panel p-3 mb-2 bg-dark text-white">
+  <div id="side-bar" class="side-panel p-3 mb-2 bg-dark text-white text-left">
       side Panel stuff!
     <p>You chose <b> {{ $store.getters.selectedArcs }} </b> </p>
     <hr>
@@ -29,7 +29,25 @@
       </label> <br>
       <label for="precision">
             <input type="radio" id="precision" value="precision" v-model="data_type" v-on:click="update_store">Precision 
-      </label>
+      </label><br>
+      <label for="recall">
+            <input type="radio" id="recall" value="recall" v-model="data_type" v-on:click="update_store">Recall 
+      </label><br>
+      <label for="f1-score">
+            <input type="radio" id="f1-score" value="f1-score" v-model="data_type" v-on:click="update_store">F1-score 
+      </label><br>
+      <label for="specificity">
+            <input type="radio" id="specificity" value="specificity" v-model="data_type" v-on:click="update_store">Specificity 
+            <br><small>(True Negative Rate)</small>
+      </label><br>
+      <label for="fpr">
+            <input type="radio" id="fpr" value="fpr" v-model="data_type" v-on:click="update_store">False Positive Rate 
+            <br><small>(Type I Error)</small>
+      </label><br>
+      <label for="fnr">
+            <input type="radio" id="fnr" value="fnr" v-model="data_type" v-on:click="update_store">False Negative Rate 
+            <br><small>(Type II Error)</small>
+      </label><br>
     </div>
     <hr>
     <label for="slider">Plot Spacing

@@ -31,7 +31,31 @@ module.exports = (io)=>{
         socket.on("recall", function(){
             console.log("recall nina! boo boo!");
             var recall = c_matrix.get_recall();
-            socket.emit("precision_data_from_server", recall);
+            socket.emit("recall_data_from_server", recall);
+        })
+
+        socket.on("f1-score", function(){
+            console.log("f1-score !\n\n");
+            var f1_score = c_matrix.get_f1();
+            socket.emit("f1-score_data_from_server", f1_score);
+        })
+
+        socket.on("specificity", function(){
+            console.log("specificity!\n\n");
+            var specificity = c_matrix.get_specificity();
+            socket.emit("specificity_data_from_server", specificity);
+        })
+
+        socket.on("fpr", function(){
+            console.log("fpr!\n\n");
+            var fpr = c_matrix.get_FPR();
+            socket.emit("fpr_data_from_server", fpr);
+        })
+
+        socket.on("fnr", function(){
+            console.log("fnr!\n\n");
+            var fnr = c_matrix.get_FNR();
+            socket.emit("fnr_data_from_server", fnr);
         })
 
         // console.log(socket.id); 
@@ -62,10 +86,3 @@ module.exports = (io)=>{
         });
     })
 };
-
-
-// socket.emit("data_files", f.get_filenames(), (response) => {
-            //     console.log(response.status); // ok
-            //     console.log("yeeeha");
-            //     // console.log(f.get_filenames());
-            // });

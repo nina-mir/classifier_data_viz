@@ -12,7 +12,11 @@ var cm_object={};
 var accuracy_object={};
 var precision_object={};
 var recall_object = {};
-
+var f1_object = {};
+var specificity_object = {};
+var fpr_object = {};
+var fnr_object = {};
+ 
 function get_accuracy(){
     return accuracy_object;
 }
@@ -24,6 +28,23 @@ function get_precision(){
 function get_recall(){
     return compute_recall();
 }
+
+function get_f1(){
+    return compute_f1();
+}
+
+function get_specificity(){
+    return compute_specificity();
+}
+
+function get_FPR(){
+    return compute_fpr();
+}
+
+function get_FNR(){
+    return compute_fnr();
+}
+
 
 var groundPath = path.join(__dirname, '..', directory_name, 'ground-truth.json');
 
@@ -126,8 +147,8 @@ function compute_recall(){
         var results = cm_object[name];
     
         var TP = results.TP;
-        var TN = results.TN;
-        var FP = results.FP; 
+        // var TN = results.TN;
+        // var FP = results.FP; 
         var FN = results.FN;
         
         for (let class_index = 0; class_index < num_classes; class_index++) {
@@ -143,8 +164,93 @@ function compute_recall(){
     return recall_object;
 }
 
+// compute f1-score for each class in each model
+// we need both Precision and Recall objects to do the following
+function compute_f1(){
+    var models = Object.keys(cm_object);
+    for (let step = 0; step < models.length; step++) {
+        var row_f1 = Array(num_classes).fill(0);
+        var name = models[step];
+        
+        if (Object.keys(recall_object).length === 0) {
+            compute_recall();
+        }
+        
+        for (let class_index = 0; class_index < num_classes; class_index++) {
+            var numerator = 2.0*precision_object[name][class_index]*recall_object[name][class_index];
+            var denominator = precision_object[name][class_index] + recall_object[name][class_index];
+            row_f1[class_index] = numerator/denominator;   
+        }
+       
+        f1_object[name] = row_f1;
+    }
+    return f1_object;
+}
 
+// compute specificity for each class in each model
+// Definition: Specificity (True Negative Rate): Number of items correctly identified as negative out of the total actual negatives
+// formula to compute: TN/(TN+FP)
 
+function compute_specificity(){
+    var models = Object.keys(cm_object);
+    for (let step = 0; step < models.length; step++) {
+        var row_r = Array(num_classes).fill(0);
+        var name = models[step]
+        var results = cm_object[name];
+    
+        var TN = results.TN;
+        var FP = results.FP;
+        console.log(TN);
+        console.log(FP);
+        for (let class_index = 0; class_index < num_classes; class_index++) {
+            row_r[class_index] = TN[class_index]/(TN[class_index] + FP[class_index] );
+        }
+        specificity_object[name] = row_r;
+    }
+    return specificity_object;
+}
+
+// False Positive Rate, or Type I Error: Number of items wrongly 
+// identified as positive out of the total actual negatives — FP/(FP+TN). 
+
+function compute_fpr(){
+    var models = Object.keys(cm_object);
+    for (let step = 0; step < models.length; step++) {
+        var row_r = Array(num_classes).fill(0);
+        var name = models[step]
+        var results = cm_object[name];
+    
+        var TN = results.TN;
+        var FP = results.FP;
+       
+        for (let class_index = 0; class_index < num_classes; class_index++) {
+            row_r[class_index] = FP[class_index]/(TN[class_index] + FP[class_index] );
+        }
+        fpr_object[name] = row_r;
+    }
+    return fpr_object;
+}
+
+// False Negative Rate, or Type II Error: Number of items wrongly identified 
+// as negative out of the total actual positives — FN/(FN+TP). 
+
+function compute_fnr(){
+    var models = Object.keys(cm_object);
+    for (let step = 0; step < models.length; step++) {
+        var row_r = Array(num_classes).fill(0);
+        var name = models[step]
+        var results = cm_object[name];
+    
+        var TP = results.TP;
+        var FN = results.FN;
+       
+        for (let class_index = 0; class_index < num_classes; class_index++) {
+            row_r[class_index] = FN[class_index]/(FN[class_index] + TP[class_index] );
+        }
+        fnr_object[name] = row_r;
+    }
+    return fnr_object;
+}
 
 // ===========================================
 // confusion_matrix('model-1.json');
@@ -257,8 +363,6 @@ function accuracy_per_each_class(cm_object){
 
 }
 
-
-
 // var model_input = f.read_file('model-1.json');
 
 function range(start, end) {
@@ -333,6 +437,10 @@ module.exports = {
     get_num_models, 
     get_accuracy, 
     get_precision, 
-    get_recall
+    get_recall,
+    get_f1,
+    get_specificity, 
+    get_FPR,
+    get_FNR
 }
         
