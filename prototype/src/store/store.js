@@ -8,7 +8,8 @@ export const store = new Vuex.Store({
         selectedArcs: '',
         num_data_files: 0, 
         name_data_files:[],
-        op_type:'accuracy'
+        op_type:'accuracy',
+        plot_type: 'arcs'
     },
     mutations: {
       change(state, selectedArcs) {
@@ -19,6 +20,9 @@ export const store = new Vuex.Store({
       },
       change_op_type(state, op_type){
         state.op_type = op_type;
+      },
+      change_plot_type(state, plot_type){
+        state.plot_type = plot_type;
       }
     },
     getters: {
@@ -26,5 +30,6 @@ export const store = new Vuex.Store({
       num_data_files: state => state.num_data_files, 
       name_data_files: state => state.name_data_files,
       op_type: state => state.op_type,  
+      plot_type: state => state.plot_type
     }
 })

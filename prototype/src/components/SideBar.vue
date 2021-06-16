@@ -3,24 +3,12 @@
       side Panel stuff!
     <p>You chose <b> {{ $store.getters.selectedArcs }} </b> </p>
     <hr>
-    <!-- <div class="row">
-      <div class="col">
-        <p-radio class="p-curve" color="info-o" name="radio" value="Arcs" v-model="radio">
-          Arcs
-        </p-radio> 
-      </div>
-      <div class="col">
-        <p-radio name="radio" color="warning" v-model="radio" value="Lines" >Lines</p-radio> 
-      </div>
-    </div>
-    <p>Message is: {{ radio }}</p> -->
-
     <div id="model-graphs">
       <label for="one">
-        <input type="radio" id="one" value="arcs" v-model="picked"> Arcs View
+        <input type="radio" id="one" value="arcs" v-model="picked" v-on:click="update_store_val"> Arcs View
       </label> <br>
       <label for="two">
-            <input type="radio" id="two" value="lines" v-model="picked">Lines View
+            <input type="radio" id="two" value="lines" v-model="picked" v-on:click="update_store_val">Lines View
       </label>
       <p>{{ picked }} is selected!</p>
       <hr>
@@ -64,7 +52,7 @@ export default {
   name: 'side-bar',
   data(){
     return {
-      picked:"",
+      picked: this.$store.getters.plot_type,
       plot_spacing: 1,
       socket:{},
       data_type: this.$store.getters.op_type
@@ -74,7 +62,11 @@ export default {
     update_store: function(event) {
           console.log(event.target.value);
           this.$store.commit('change_op_type', event.target.value);
-    }, 
+    },
+    update_store_val: function(event) {
+          console.log(event.target.value);
+          this.$store.commit('change_plot_type', event.target.value);
+    } 
   },
   created(){
     this.socket = io("http://localhost:3000");

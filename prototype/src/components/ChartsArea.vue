@@ -16,7 +16,8 @@
     <output @change="changed">22</output>
     <div id="container" class="svg-container">
       <svg id="demo1"  >
-        <g id="main" transform="translate(600, 600)"></g>
+        <!-- <g id="main" transform="translate(600, 600)"></g> -->
+        <g id="main"></g>
       </svg>  
     </div>
   </div>
@@ -111,10 +112,104 @@ export default {
                     .curve(d3.curveCatmullRom)
                 )
                 .attr("fill", "none")
-                .attr("stroke", "black");
-                // .attr("opacity", this.getRandomIntInclusive(0, 100)/100); 
-                // .attr("transform", "translate(600, 600)");        
+                .attr("stroke", "black")
+                .attr("transform", "translate(600, 600)");    
           }         
+      },
+      render_op_line: function(word) {
+        console.log("line view " + String(word));
+        this.socket = io("http://localhost:3000");
+        this.socket.emit(word);
+        var emit_name = `${word}_data_from_server`;
+        this.socket.on(emit_name, function(data){
+          this.received_data = data;
+                    
+          var model_names = Object.keys(this.received_data);
+          var data_to_render = {};
+          model_names.forEach(model_name => {
+            var temp_array = this.received_data[model_name];
+            var temp_arr_2  = Object.values(temp_array);
+            var map_1 = temp_arr_2.map(x => x*20.0) ;
+            data_to_render[model_name] = map_1;
+          });
+
+          var svg = d3.select("div#container").select("#demo1").select('#main');
+          svg.selectAll("*").remove();
+
+          // create a tooltip
+          // var Tooltip = d3.select("#main")
+          //   .append("div")
+          //   .style("opacity", 0)
+          //   .attr("class", "tooltip")
+          
+
+          var Tooltip = d3.select("div#container").select("#demo1").select('#main').append("div")	
+          .attr("class", "tooltip")				
+          .style("opacity", 1)
+          .style("position", "relative")
+            .style("background-color", "black")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px");
+
+          // Three function that change the tooltip when user hover / move / leave a cell
+          var mouseover = function() {
+            d3.select(this).attr("stroke-width", "3px");
+            Tooltip.transition()		
+                .duration(2000)		
+                .style("opacity", 1);	
+
+            Tooltip.html("The exact value of<br>this cell is: ")
+              .style("left", (d3.event.pageX) + "px")
+              .style("top", (d3.event.pageY) + "px");
+          }
+          var mousemove = function() {
+            Tooltip
+              .html("The exact value of<br>this cell is: ")
+              .style("left", (d3.event.pageX) + "px")
+              .style("top", (d3.event.pageY) + "px");
+
+              Tooltip.transition()		
+                .duration(2000)		
+                .style("opacity", 1);	
+          }
+          var mouseleave = function() {
+            Tooltip.transition()		
+              .duration(2000)		
+              .style("opacity", 0);	
+            d3.select(this).attr("stroke", "black");
+            d3.select(this).transition()		
+              .duration(2000).attr("stroke-width", "1px");
+
+
+            // d3.select(this)
+            //   .style("stroke", "none")
+            //   .style("opacity", 0.8)
+          }
+
+          for (let i = 0 ; i < model_names.length; i++) {
+            console.log(data_to_render[model_names[i]]);
+            // Create and append the multiple outer arcs
+            svg.append('g')
+                .append('path')
+                .style('fill', 'none')  
+                .datum(data_to_render[model_names[i]])              
+                .attr('d', 
+                d3.line()
+                    .x((d, ii) =>  ii*1.15) 
+                    .y((d) => d + i*50)
+                    .curve(d3.curveBasis)
+                )
+                .attr("class", model_names[i])
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("transform", "translate(25, 600)")
+                .on("mouseover", mouseover)
+                .on("mousemove", mousemove)
+                .on("mouseout", mouseleave);      
+          }  
+        });
       },
       test: function () {
         console.log("nina is great!");
@@ -160,12 +255,54 @@ export default {
          
           var svg = d3.select("div#container").select("#demo1").select('#main');
           svg.selectAll("*").remove();
-         
+
+
+          var Tooltip = d3.select("div#container").select("#demo1").select('#main').append("div")	
+          .attr("class", "tooltip")				
+          .style("opacity", 0.9);
+          // .style("position", "relative")
+          //   .style("background-color", "black")
+          //   .style("border", "solid")
+          //   .style("border-width", "2px")
+          //   .style("border-radius", "5px")
+          //   .style("padding", "5px");
+
+          // Three function that change the tooltip when user hover / move / leave a cell
+          var mouseover = function() {
+            d3.select(this).attr("stroke-width", "3px");
+            // Tooltip.transition()		
+            //     .duration(2000)		
+            //     .style("opacity", 1);	
+
+            // Tooltip.html("<b>The exact value of<br>this cell is:</b> ")
+            //   .style("left", (d3.event.pageX ) + "px")
+            //   .style("top", (d3.event.pageY) + "px");
+
+            window.alert(d3.event.pageX);
+
+          }
+          var mousemove = function() {
+            Tooltip
+              .html("The exact value of<br>this cell is: ")
+              .style("left", (d3.event.pageX - 600 ) + "px")
+              .style("top", (d3.event.pageY - 600) + "px");
+
+              Tooltip.transition()		
+                .duration(2000)		
+                .style("opacity", 1);	
+          }
+          var mouseleave = function() {
+            Tooltip.transition()		
+              .duration(2000)		
+              .style("opacity", 0);	
+            d3.select(this).attr("stroke", "black");
+            d3.select(this).transition()		
+              .duration(2000).attr("stroke-width", "1px");
+          }
           for (let i = 0 ; i < model_names.length; i++) {
             console.log(data_to_render[model_names[i]]);
             // Create and append the multiple outer arcs
-            svg.append('g')
-                .append('path')
+            svg.append('path')
                 .style('fill', 'none')  
                 .datum(data_to_render[model_names[i]])              
                 .attr('d', 
@@ -175,7 +312,11 @@ export default {
                   .curve(d3.curveCatmullRom)
                 )
                 .attr("fill", "none")
-                .attr("stroke", "black");      
+                .attr("stroke", "black")
+                .attr("transform", "translate(600, 600)")
+                .on("mouseover", mouseover)
+                .on("mousemove", mousemove)
+                .on("mouseout", mouseleave);        
           }         
 
         });
@@ -187,13 +328,6 @@ export default {
           this.renderGraphs();
         });
 
-        
-        // this.socket.on("precision_data_from_server", function(data){
-        //   console.log(data);
-        //   this.received_data = data;
-        //   // this.renderGraphs();
-        // });
-
         this.socket.on("ask for more", function(){
           console.log("maybe");
         });
@@ -204,30 +338,44 @@ export default {
         
     },
     computed: {
-      doneTodosCount () {
+      chosenOpType () {
         return this.$store.getters.op_type;
+      },
+      chosenPlotType () {
+        return this.$store.getters.plot_type;
+      },
+      chosenOpTypePlotType() {
+        return [this.$store.getters.op_type, this.$store.getters.plot_type];
       }
     },
     watch:{
-        doneTodosCount(value) {
-          console.log(`My store value for 'doneTodosCount' changed to ${value}`);
-          this.picked = value;
-          if (this.picked === "precision") {
-            this.render_op("precision");
-          } else if (this.picked === "recall") {
-            this.render_op("recall");
-          } else if (this.picked === "f1-score") {
-            this.render_op("f1-score");
-          } else if (this.picked === "specificity") {
-            this.render_op("specificity");
-          } else if (this.picked === "fpr") {
-            this.render_op("fpr");
-          } else if (this.picked === "fnr") {
-            this.render_op("fnr");
-          }
-
-          return this.picked;
+      // chosenOpType(value) {
+      //   console.log(`My store value for 'chosenOpType' changed to ${value}`);
+      //   this.picked = value;
+      //   this.render_op_line(value);
+      //   return this.picked;
+      // },
+      // chosenPlotType(value) {
+      //   console.log(`My store value for 'chosenPlotType' changed to ${value}`);
+      //   // this.picked = value;
+      //   // this.render_op_line(value);
+      //   // return this.picked;
+      // },
+      chosenOpTypePlotType (value){
+        console.log(`VAL1 'chosenOpType' changed to ${value[0]}`);
+        console.log(`VAL2 'chosenPlotType' changed to ${value[1]}`);
+        if (value[1] === "lines") {
+          this.render_op_line(value[0]);
+        } else {
+          this.render_op(value[0]);
         }
+        
+      },
+      // 'high_arc_index': {
+      //     handler: function (val, oldVal) {
+      //       console.log('new: %s, old: %s', val, oldVal);
+      //     }
+      // }
     }
 }
 
