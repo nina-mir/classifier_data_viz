@@ -77,12 +77,12 @@ export default {
               .attr("viewBox", "0 0 1200 1200")
               .classed("svg-content", true);
       },
-      renderGraphs: function() {
-          // To Do add metric accuracy log here
-          // if 
+    renderGraphs: function () {
+      // To Do add metric accuracy log here
+      // if
 
-          console.log('inside render shit!')
-          var angles = Array(1000).fill(0);
+      console.log("inside render shit!");
+      var angles = Array(1000).fill(0);
           var delta = 6.28/1000;
           var angle = 0;
           for (let step = 0; step < 1000; step++) {
