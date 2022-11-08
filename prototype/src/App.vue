@@ -16,7 +16,6 @@
 </template>
 
 <script>
-// import FileSelect from '@/components/FileSelect.vue'
 import FileUpload from '@/components/FileUpload.vue'
 import SideBar from '@/components/SideBar.vue'
 import ChartsArea from '@/components/ChartsArea.vue'
@@ -26,7 +25,6 @@ export default {
   name: 'App',
   components: {
     SideBar,
-    // FileSelect,
     ChartsArea,
     FileUpload
   },
