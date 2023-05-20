@@ -15,3 +15,4 @@ dummy-data-files/
 metrics_computation/
 server/JSON_copy
 server/node_modules
+JSON_copy/
