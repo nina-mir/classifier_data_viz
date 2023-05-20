@@ -17,31 +17,31 @@ module.exports = (io)=>{
         });
         
         socket.on("accuracy", function(){
-            console.log("yo yo yo nina! boo boo!");
+            console.log("accuracy-server");
             var accuracy = c_matrix.get_accuracy();
             socket.emit("accuracy_data_from_server", accuracy);
         });
 
         socket.on("precision", function(){
-            console.log("precision precision nina! boo boo!");
+            console.log("precision-server");
             var accuracy = c_matrix.get_precision();
             socket.emit("precision_data_from_server", accuracy);
         })
         
         socket.on("recall", function(){
-            console.log("recall nina! boo boo!");
+            console.log("recall-server");
             var recall = c_matrix.get_recall();
             socket.emit("recall_data_from_server", recall);
         })
 
         socket.on("f1-score", function(){
-            console.log("f1-score !\n\n");
+            console.log("f1-score-server");
             var f1_score = c_matrix.get_f1();
             socket.emit("f1-score_data_from_server", f1_score);
         })
 
         socket.on("specificity", function(){
-            console.log("specificity!\n\n");
+            console.log("specificity-server");
             var specificity = c_matrix.get_specificity();
             socket.emit("specificity_data_from_server", specificity);
         })

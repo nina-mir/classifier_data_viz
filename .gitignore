@@ -6,5 +6,12 @@ EVN/.env
 EVN/.DS_Store
 EVN/client/node_modules
 
+backup/
+metrics_computation/
 prototype/node_modules
-
+server/*.JSON
+server/*.txt
+dummy-data-files/
+metrics_computation/
+server/JSON_copy
+server/node_modules

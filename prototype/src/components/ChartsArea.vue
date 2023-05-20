@@ -1,6 +1,6 @@
 <template>
   <div id="charts-area" class="main-panel">
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert">
       {{ $store.getters.num_data_files }} models' results detected in
       "data_files" directory
       <button
@@ -11,17 +11,21 @@
       >
         <span aria-hidden="true">&times;</span>
       </button>
-    </div>
-    <div id="model-graphs">
+      <v-btn block> Block Button </v-btn>
+    </div> -->
+    <!-- <div id="model-graphs">
       <p>{{ picked }} is selected!</p>
       <p>{{ picked }} is the current store value !</p>
-    </div>
+    </div> -->
+
     <div class="MultiRangeSliderContainer">
       <div
         style="
           display: flex;
           justify-content: space-between;
           text-align: center;
+          font-family: Roboto, sans-serif;
+          color: black;
         "
       >
         <span
@@ -32,10 +36,13 @@
             border-radius: 5px;
             width: 100px;
             margin: 3px;
+            font-family: Roboto, sans-serif;
           "
           >From {{ barMinValue }}</span
         >
-        <span>Chooose A Range of Classes</span>
+        <span style="font-family: Roboto, sans-serif"
+          >Chooose A Range of Classes</span
+        >
         <span
           style="
             display: inline-block;
@@ -44,6 +51,7 @@
             border-radius: 5px;
             width: 100px;
             margin: 3px;
+            font-family: Roboto, sans-serif;
           "
           >To {{ barMaxValue }}</span
         >
@@ -60,7 +68,7 @@
         @input="UpdateValues"
       />
     </div>
-    <input
+    <!-- <input
       name="Number of Arcs"
       type="range"
       min="4"
@@ -69,10 +77,16 @@
       v-on:change="test"
       oninput="this.nextElementSibling.value = this.value"
     />
-    <output @change="changed">22</output>
+    <output @change="changed">22</output> -->
     <div id="container" class="svg-container">
+      <!-- <div id="tooltip-container" class="nina-tooltip">
+        <a href="http://google.com"> "nina is hier bb" </a>
+        <br />
+        "ich mag fahrrad fahren bb"
+        <div id="tipDiv"></div>
+      </div> -->
+
       <svg id="demo1">
-        <!-- <g id="main" transform="translate(600, 600)"></g> -->
         <g id="main"></g>
       </svg>
     </div>
@@ -83,8 +97,6 @@
 import io from "socket.io-client";
 import * as d3 from "d3";
 import json from "../assets/json_1000.json";
-// import * as tip from "../assets/d3-tip.js";
-
 import MultiRangeSlider from "multi-range-slider-vue";
 
 export default {
@@ -123,6 +135,9 @@ export default {
       barMax: 1000,
       barMinValue: 1,
       barMaxValue: 1000,
+      min: 1,
+      max: 1000,
+      range: [1, 1000],
     };
   },
   created() {
@@ -216,11 +231,94 @@ export default {
     changed: function (event) {
       this.$store.commit("change", event.target.value);
     },
-    get_accuracy: function () {},
+    horizontal_bar_chart: function (container_div_id, data, source_calss_id) {
+      // TO DO Calculate the margin values depending on the Cxa nd Cy values
+
+      // set the dimensions and margins of the graph
+      var margin = { top: 30, right: 30, bottom: 40, left: 90 },
+        width = 260 - margin.left - margin.right,
+        height = 200 - margin.top - margin.bottom;
+
+      var target_id = "#" + container_div_id;
+
+      // append the svg object to the body of the page
+      var svg = d3
+        .select(target_id)
+        .append("svg")
+        .attr("id", "tipSVG")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // Create TITLE label
+
+      svg
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 0 - margin.top / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .style("text-decoration", "underline")
+        .text("Class id: " + source_calss_id);
+
+      // svg
+      //   .append("text")
+      //   .attr("transform", "translate(" + width / 2 + " ," + height - 100 + ")")
+      //   .style("text-anchor", "middle")
+      //   .text("Year of the dog baby boy");
+
+      //Create X axis label
+      var curr_activity = this.picked.toString();
+      svg
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 0.5 * (margin.bottom + margin.top))
+        .style("text-anchor", "middle")
+        .text("Values of " + curr_activity.toUpperCase() + " Metric");
+
+      // Add X axis
+      var x = d3.scaleLinear().domain([0, 10]).range([0, width]);
+      svg
+        .append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+
+      var y_labels = [];
+      data.each(function (d, i) {
+        var div = d3.select(this);
+        y_labels[i] = div.attr("id");
+        // return d.attr("id");
+      });
+
+      // Y axis
+      var y = d3.scaleBand().range([0, height]).domain(y_labels).padding(0.1);
+      svg.append("g").call(d3.axisLeft(y));
+
+      var pure_data = data.data();
+      //Bars
+      svg
+        .selectAll("myRect")
+        .data(pure_data)
+        .enter()
+        .append("rect")
+        .attr("x", x(0))
+        .attr("y", function (d, i) {
+          return y(y_labels[i]);
+        })
+        .attr("width", function (d) {
+          return x(d);
+        })
+        .attr("height", y.bandwidth())
+        .attr("fill", "gray");
+    },
     // function to include class range as input
-    /* */
     render_op_args: function (word, lowerClassIndex, upperClassIndex) {
       console.log("Render-op-args   :", word);
+      var ref = this;
 
       this.socket = io("http://localhost:3000");
       this.socket.emit(word);
@@ -228,22 +326,27 @@ export default {
 
       // set up the svg
       this.svg_setup();
-      //append a tooltip div
+
+      // remove any existing tooltip-container div
+      d3.select("#tooltip-container").remove();
+
+      //append a tooltip div tooltip-container
+
       var tooltip = d3
         .select("body")
         .append("div")
-        .attr("class", "nina-tooltip")
+        .attr("id", "tooltip-container")
         .style("position", "absolute")
         .style("z-index", "10")
         .style("visibility", "hidden")
         .style("border", "0px")
         .style("border-radius", "8px")
-        // .style("background-color", "red")
-        .style("background", "lightsteelblue")
-        .style("width", "100px")
-        .style("height", "28px")
+        .style("background", "lightgreen")
+        .style("opacity", "0.95")
+        .style("width", "280px")
+        .style("height", "220px")
         .style("font", "12px sans-serif")
-        .text("a simple tooltip");
+        .html("<div id='tipDiv'> </div >");
 
       //Get data from the server
       this.socket.on(emit_name, function (data) {
@@ -261,6 +364,7 @@ export default {
         model_names.forEach((model_name) => {
           var temp_array = this.received_data[model_name];
           var temp_arr_2 = Object.values(temp_array);
+          console.log("inja", temp_arr_2);
           var map_1 = temp_arr_2.map((x) => x * 10.0);
           data_to_render[model_name] = map_1;
         });
@@ -297,8 +401,6 @@ export default {
           );
           colors[2] = "gray";
 
-          // console.log(this.$data.styleSpec[1]);
-
           for (let s = 0; s < slice.length; ++s) {
             //pass;
 
@@ -324,6 +426,10 @@ export default {
               .data(slice[s])
               .enter()
               .append("circle")
+              .attr("id", "model-" + i)
+              .attr("class", function (d, counter) {
+                return "circle" + " slice-" + s + " elem-" + counter;
+              })
               .style("fill", "none")
               .style("stroke", "none")
               .style("pointer-events", "all")
@@ -339,19 +445,99 @@ export default {
                   Math.sin(angles_sections[s][ii] - Math.PI / 2)
                 );
               })
-              .attr("r", 2)
-              .on("mouseover", function (d, i) {
-                d3.select(this).style("fill", "red");
-                tooltip.text("angle:" + i);
+              .attr("r", 3)
+              .on("mouseover", function () {
+                var tooltip_source_elem = d3.select(this);
+                tooltip_source_elem.style("fill", "red");
+
+                var source_id = tooltip_source_elem.attr("id");
+                console.log(source_id);
+                var source_class = tooltip_source_elem.attr("class");
+                let classes = source_class.split(" ");
+                // console.log(classes.slice(-1)[0]);
+                // var elem_index = classes.slice(-1)[0];
+                var elem_list = d3.selectAll(
+                  "." + classes[0] + "." + classes[1] + "." + classes[2]
+                );
+
+                elem_list.each(function () {
+                  var div = d3.select(this);
+
+                  if (div.attr("id") == source_id) {
+                    div.style("stroke", "black");
+                  } else {
+                    div.style("stroke", "blue").style("fill", "blue");
+                  }
+                });
+                // DATA from the class selectin above is displayed
+                console.log(elem_list.data());
+
+                //append a tooltip div
+
+                // svg within tooltip
+
+                // var tipSVG = d3
+                //   .select("#tipDiv")
+                //   .append("svg")
+                //   .attr("id", "tipSVG")
+                //   .attr("width", 200)
+                //   .attr("height", 50);
+
+                ref.horizontal_bar_chart("tipDiv", elem_list, classes[2]);
+
+                // tipSVG
+                //   .append("rect")
+                //   .attr("fill", "steelblue")
+                //   .attr("y", 10)
+                //   .attr("width", 0)
+                //   .attr("height", 30)
+                //   .transition()
+                //   .duration(1000)
+                //   .attr("width", 5 * 6);
+
+                // tipSVG
+                //   .append("text")
+                //   .text("nianna is here!")
+                //   .attr("x", 10)
+                //   .attr("y", 30)
+                //   .transition()
+                //   .duration(1000)
+                //   .attr("x", 6 + 5 * 6);
+
+                // .style("stroke", "blue");
                 return tooltip.style("visibility", "visible");
+                // .style("top", d3.select(this).attr("cy") + "px")
+                // .style("left", d3.select(this).attr("cx") + "px");
               })
               .on("mousemove", function () {
+                // var tooltip = d3.select("#tipDiv");
+                // var tooltip = d3.select("#tooltip-container");
+
                 return tooltip
                   .style("top", d3.event.pageY - 10 + "px")
                   .style("left", d3.event.pageX + 10 + "px");
               })
               .on("mouseout", function () {
-                d3.select(this).style("fill", "none");
+                var tooltip_source_elem = d3.select(this);
+                tooltip_source_elem
+                  .style("fill", "none")
+                  .style("stroke", "none");
+                // tooltip_source_elem.style("fill", "red");
+
+                // var source_id = tooltip_source_elem.attr("id");
+                var source_class = tooltip_source_elem.attr("class");
+                let classes = source_class.split(" ");
+                // console.log(classes.slice(-1)[0]);
+                // var elem_index = classes.slice(-1)[0];
+                // var elem_list =
+                d3.selectAll(
+                  "." + classes[0] + "." + classes[1] + "." + classes[2]
+                )
+                  .style("fill", "none")
+                  .style("stroke", "none");
+
+                d3.select("#tipSVG").remove();
+
                 return tooltip.style("visibility", "hidden");
               })
               .attr("transform", "translate(600, 600)");
@@ -364,16 +550,13 @@ export default {
     this.socket.on("position", (data) => {
       this.high_arc_index = data;
       // this.render_op("accuracy");
-      this.render_op_args("accuracy", this.barMinValue, this.barMaxValue);
+      this.render_op_args(this.picked, this.barMinValue, this.barMaxValue);
     });
 
     this.socket.on("ask for more", function () {
       console.log("maybe");
     });
     this.socket.emit(String(this.metric));
-    //APRIL-8-22 nina commented this.socket.on("accuracy_data_from_server", function(data){
-    //   console.log(data);
-    // });
   },
   computed: {
     chosenOpType() {
@@ -431,6 +614,19 @@ export default {
   vertical-align: top;
   overflow: hidden;
 }
+
+/* .nina-tooltip {
+  position: absolute;
+  z-index: 10;
+  visibility: hidden;
+  border: 0px;
+  border-radius: 8px;
+  background: lightsteelblue;
+  width: 100px;
+  height: 28px;
+  font: 12px sans-serif;
+} */
+
 .svg-content {
   display: inline-block;
   position: absolute;
@@ -442,6 +638,9 @@ export default {
   width: 50%;
 }
 
+.bar-inner .bar .bar-left .bar-right {
+  background-color: black;
+}
 /* .nina-tooltip {
   position: absolute;
   text-align: center;
