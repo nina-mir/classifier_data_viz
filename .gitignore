@@ -8,7 +8,7 @@ EVN/client/node_modules
 
 backup/
 metrics_computation/
-prototype/node_modules
+frontend/node_modules
 server/*.JSON
 server/*.txt
 dummy-data-files/
