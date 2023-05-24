@@ -11,8 +11,13 @@ the project has two sides: server and frontend. to run this code, the user needs
 
 - Clone the project
 - `cd PATH/to/server`
+- install the dependencies
+- `npm i`
 - then, `nodemon app.js` 
+- in a different terminal window
 - `cd PATH/to/frontend`
+- install the dependencies
+- `npm i`
 -  then, `npm run serve`
 
 #### the project should be viewable on local port 8000
