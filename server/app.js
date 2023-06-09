@@ -4,7 +4,9 @@ const path = require('path');
 const http = require("http").Server(Express);
 const socketio = require("socket.io")(http, {
     cors: {
-        origin: '*',
+        // origin: '*',
+        origin: "http://localhost:8080",
+        methods: ["GET", "POST"]
     }
 })
 

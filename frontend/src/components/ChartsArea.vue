@@ -1,23 +1,5 @@
 <template>
   <div id="charts-area" class="main-panel">
-    <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      {{ $store.getters.num_data_files }} models' results detected in
-      "data_files" directory
-      <button
-        type="button"
-        class="close"
-        data-dismiss="alert"
-        aria-label="Close"
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <v-btn block> Block Button </v-btn>
-    </div> -->
-    <!-- <div id="model-graphs">
-      <p>{{ picked }} is selected!</p>
-      <p>{{ picked }} is the current store value !</p>
-    </div> -->
-
     <div class="MultiRangeSliderContainer">
       <div
         style="
@@ -68,24 +50,8 @@
         @input="UpdateValues"
       />
     </div>
-    <!-- <input
-      name="Number of Arcs"
-      type="range"
-      min="4"
-      max="22"
-      v-model="high_arc_index"
-      v-on:change="test"
-      oninput="this.nextElementSibling.value = this.value"
-    />
-    <output @change="changed">22</output> -->
-    <div id="container" class="svg-container">
-      <!-- <div id="tooltip-container" class="nina-tooltip">
-        <a href="http://google.com"> "nina is hier bb" </a>
-        <br />
-        "ich mag fahrrad fahren bb"
-        <div id="tipDiv"></div>
-      </div> -->
 
+    <div id="container" class="svg-container">
       <svg id="demo1">
         <g id="main"></g>
       </svg>
