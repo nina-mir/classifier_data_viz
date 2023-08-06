@@ -1,15 +1,12 @@
 <script setup>
-// import ChartsArea from "./components/ChartsArea_test.vue";
 import ChartsArea from "./components/ChartsArea.vue";
 import SideBar from "./components/SideBar.vue";
-// import FileUpload from "./components/FileUpload.vue";
 </script>
 
 <template>
   <div class="container" id="app">
     <div class="row">
       <div class="col-lg-3">
-        <!-- <FileUpload /> -->
         <SideBar />
       </div>
       <div class="col-lg-9">

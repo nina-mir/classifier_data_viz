@@ -64,7 +64,6 @@
     </div>
     <hr />
     <div id="container" class="svg-container">
-      <!-- <h3>selected type is: {{ this.$store.getters.op_type }}</h3> -->
       <svg id="svg-element">
         <g id="main"></g>
       </svg>
@@ -261,7 +260,6 @@ export default {
 
         for (let i = 0; i < model_names.length; i++) {
           // Create and append the multiple outer arcs
-          //TODO data_to_render needs tyo be sliced up
           // TO BE USED lowerClassIndex, upperClassIndex -- min class index is 1 NOT 0
           var slice = [],
             colors = [],
@@ -348,8 +346,6 @@ export default {
                 const element = document.getElementById("svg-element");
                 const rect = element.getBoundingClientRect();
                 var xy = d3.pointer(event, d3.select("#container"));
-                // var container_width = rect.width;
-                // var container_height = rect.height;
                 var left, top;
                 var elem_number = parseInt(classes[2].slice(5));
                 if (elem_number < 250) {
@@ -421,13 +417,9 @@ export default {
 <style scoped>
 .main-panel {
   color: black;
-  /* border: black solid 1px; */
-  /* width: 77%; */
   margin-left: 1px;
-  /* float: right; */
 }
 .svg-container {
-  /* border: black solid 1px; */
   display: inline-block;
   position: relative;
   width: 100%;
