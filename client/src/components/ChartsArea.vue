@@ -153,14 +153,19 @@ export default {
       svg
         .append("text")
         .attr("x", width / 2)
-        .attr("y", height + 0.5 * (margin.bottom + margin.top))
+        .attr("y", height + 0.9 * margin.top)
         .style("text-anchor", "middle")
         .text(
           "Values of " +
             curr_activity.charAt(0).toUpperCase() +
             curr_activity.slice(1) +
             " Metric"
-        );
+        )
+        .append("tspan")
+        .attr("x", width / 2)
+        .attr("y", height + 1.32 * margin.top)
+        .style("font-style", "italic")
+        .text("note: model-0 is the innermost arc.");
 
       // Add X axis
       var x = d3.scaleLinear().domain([0, 10]).range([0, width]);
