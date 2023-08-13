@@ -3,7 +3,7 @@
 > By: Nina Mir
 Department: Computer Science |
 Faculty Advisor: Dr. Shahrukh Humayoun
-
+more info about this project can be found in the included PDF file `Classifier_Analyzer_Poster(v1.0).pdf` in this repo.
 ---
 ## to run this project
 
