@@ -13,14 +13,14 @@ the project has two sides: server and frontend. to run this code, the user needs
 - `cd PATH/to/server`
 - install the dependencies
 - `npm i`
-- then, `nodemon app.js` 
+- then (assuming nodemon is already installed), `nodemon app.js` 
 - in a different terminal window
 - `cd PATH/to/frontend`
 - install the dependencies
 - `npm i`
 -  then, `npm run serve`
 
-#### the project should be viewable on local port 8000
+#### the project should be viewable on localhost at the port number indicated via the frontend instructions
 ---
 *notes:*
 - this prototype does not allow the user to import data files
